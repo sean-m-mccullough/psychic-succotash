@@ -6,6 +6,8 @@ import { v4 as uuid} from 'uuid';
 
 import TodoListItem from './TodoListItem'
 
+export const statusType = ['Incompleted', 'In Progress', 'Completed']
+
 export function RemoveTodo({onRemoveTodo}) {
     return (
         <button onClick={onRemoveTodo}>Remove</button>
@@ -21,28 +23,35 @@ function TodoList({ className }) {
                 <h1 className="title">TODO List Example</h1>
             </header>
             <section>
+                <button onClick={store.addItem}>
+                    Add New Item
+                </button>
+            </section>
+            <section>
                 <ul>
                     {store.activeItems.map(item => (
                         <TodoListItem
                             key={item.id}
                             name={item.name}
-                            isComplete={item.isComplete}
-                            onComplete={() => store.setCompleted(item.id)}
+                            status={item.status}
+                            onComplete={() => {
+                                store.nextStatus(item.id)
+                            }}
+                            revertStatus={() => {
+                                store.previousStatus(item.id)
+                            }}
                             onChange={(e) => store.setItemName(item.id, e.target.value)}
                             onRemove={() => store.removeItem(item.id)}
                         />
                     ))}
                 </ul>
-                <button onClick={store.addItem}>
-                    Add New Item
-                </button>
             </section>
             <footer>
                 <h2 className="completedTitle">Completed Items</h2>
                 <ul>
                     {store.completedItems.map(item => (
                         <li key={item.id}>
-                            {item.name}
+                            {item.name} - {statusType[item.status]}
                             <RemoveTodo onRemoveTodo={() => store.removeItem(item.id)} />
                         </li>
                     ))}
@@ -57,20 +66,21 @@ function createTodoStore() {
         items: [{
             id: uuid(),
             name: "Sample item",
-            isComplete: false,
+            status: 0
         }],
 
         get activeItems() {
-            return self.items.filter(i => !i.isComplete);
+            return self.items.filter(i => i.status < 2);
         },
         get completedItems() {
-            return self.items.filter(i => i.isComplete);
+            return self.items.filter(i => i.status >= 2);
         },
 
         addItem() {
             self.items.push({
                 id: uuid(),
                 name: `Item ${self.items.length}`,
+                status: 0
             });
         },
         removeItem(id) {
@@ -80,10 +90,14 @@ function createTodoStore() {
             const item = self.items.find(i => i.id === id);
             item.name = name;
         },
-        setCompleted(id) {
+        nextStatus(id) {
             const item = self.items.find(i => i.id === id);
-            item.isComplete = true;
+            item.status += 1
         },
+        previousStatus(id) {
+            const item = self.items.find(i => i.id === id);
+            item.status -= 1
+        }
     })
 
     return self;
