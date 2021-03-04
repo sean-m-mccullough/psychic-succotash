@@ -54,7 +54,7 @@ function TodoList({ className }) {
                     ))}
                 </ul>
             </section>
-            <footer>
+            <section>
                 {TodoStore.completedItems.length > 0 && <h2 className="title">Completed TODO</h2>}
                 <ul>
                     {TodoStore.completedItems.map(item => (
@@ -64,6 +64,21 @@ function TodoList({ className }) {
                         </li>
                     ))}
                 </ul>
+            </section>
+            <footer>
+                <div className="todoListFilter">
+                    <p>Filter Lists with: {TodoStore.filteredTags.map(tag => (<span>{tag}</span>))}</p>
+                    {TodoStore.tagCatalog.map(tag => (
+                        <Button key={tag} value={tag} onClick={(e) => {
+                            const tag = e.target.value
+                            if(TodoStore.filteredTags.includes(tag)) {
+                                TodoStore.removeTagFilter(tag)
+                            } else {
+                                TodoStore.addTagFilter(tag)
+                            }
+                        }}>{tag}</Button>
+                    ))}
+                </div>
             </footer>
         </div>
     )

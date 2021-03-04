@@ -10,15 +10,22 @@ function createTodoStore() {
             id: uuid(),
             name: "Contact candidates to explain the coding exercise",
             status: 1,
-            tags: []
+            tags: ["Hiring"]
         }],
         tagCatalog: ["Hiring", "Urgent"],
+        filteredTags: [],
 
         get activeItems() {
-            return self.items.filter(i => i.status < 2)
+            return self.items.filter(i => {
+                const filterList = self.filteredTags.length > 0 ? i.tags.filter(e => self.filteredTags.includes(e)).length > 0 : true
+                return i.status < 2 && filterList
+            })
         },
         get completedItems() {
-            return self.items.filter(i => i.status >= 2)
+            return self.items.filter(i => {
+                const filterList = self.filteredTags.length > 0 ? i.tags.filter(e => self.filteredTags.includes(e)).length > 0 : true
+                return i.status >= 2 && filterList
+            })
         },
 
         addTag(tag, id) {
@@ -54,6 +61,12 @@ function createTodoStore() {
         },
         statusName(statusId) {
             return statusType[statusId] || statusType[0];
+        },
+        addTagFilter(tag){
+            self.filteredTags.push(tag);
+        },
+        removeTagFilter(tag){
+            self.filteredTags = self.filteredTags.filter(t => t !== tag);
         }
     })
 
