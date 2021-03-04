@@ -6,6 +6,11 @@ import { v4 as uuid} from 'uuid';
 
 import TodoListItem from './TodoListItem'
 
+export function RemoveTodo({onRemoveTodo}) {
+    return (
+        <button onClick={onRemoveTodo}>Remove</button>
+    )
+}
 
 function TodoList({ className }) {
     const [ store ] = useState(createTodoStore);
@@ -24,6 +29,7 @@ function TodoList({ className }) {
                             isComplete={item.isComplete}
                             onComplete={() => store.setCompleted(item.id)}
                             onChange={(e) => store.setItemName(item.id, e.target.value)}
+                            onRemove={() => store.removeItem(item.id)}
                         />
                     ))}
                 </ul>
@@ -37,6 +43,7 @@ function TodoList({ className }) {
                     {store.completedItems.map(item => (
                         <li key={item.id}>
                             {item.name}
+                            <RemoveTodo onRemoveTodo={() => store.removeItem(item.id)} />
                         </li>
                     ))}
                 </ul>
@@ -65,6 +72,9 @@ function createTodoStore() {
                 id: uuid(),
                 name: `Item ${self.items.length}`,
             });
+        },
+        removeItem(id) {
+            self.items = self.items.filter(item => item.id !== id);
         },
         setItemName(id, name) {
             const item = self.items.find(i => i.id === id);
