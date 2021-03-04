@@ -1,58 +1,57 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { observer } from 'mobx-react'
 import styled from 'styled-components'
-import { observable } from 'mobx';
-import { v4 as uuid} from 'uuid';
 
+import { storesContext } from  '../store/TodoStore'
+
+import CreateTodo from './Todo/CreateTodo'
 import TodoListItem from './TodoListItem'
+import Button from './Button'
 
-export const statusType = ['Incompleted', 'In Progress', 'Completed']
+export const useTodoStores = () => React.useContext(storesContext)
 
 export function RemoveTodo({onRemoveTodo}) {
     return (
-        <button onClick={onRemoveTodo}>Remove</button>
+        <Button onClick={onRemoveTodo}>Remove</Button>
     )
 }
 
 function TodoList({ className }) {
-    const [ store ] = useState(createTodoStore);
+    const { TodoStore } = useTodoStores()
 
     return (
         <div className={className}>
             <header>
                 <h1 className="title">TODO List Example</h1>
             </header>
+            <CreateTodo />
             <section>
-                <button onClick={store.addItem}>
-                    Add New Item
-                </button>
-            </section>
-            <section>
+                {TodoStore.activeItems.length > 0 && <h2 className="title">TODO Items</h2>}
                 <ul>
-                    {store.activeItems.map(item => (
+                    {TodoStore.activeItems.map(item => (
                         <TodoListItem
                             key={item.id}
                             name={item.name}
                             status={item.status}
                             onComplete={() => {
-                                store.nextStatus(item.id)
+                                TodoStore.nextStatus(item.id)
                             }}
                             revertStatus={() => {
-                                store.previousStatus(item.id)
+                                TodoStore.previousStatus(item.id)
                             }}
-                            onChange={(e) => store.setItemName(item.id, e.target.value)}
-                            onRemove={() => store.removeItem(item.id)}
+                            onChange={(e) => TodoStore.setItemName(item.id, e.target.value)}
+                            onRemove={() => TodoStore.removeItem(item.id)}
                         />
                     ))}
                 </ul>
             </section>
             <footer>
-                <h2 className="completedTitle">Completed Items</h2>
+                {TodoStore.completedItems.length > 0 && <h2 className="title">Completed TODO</h2>}
                 <ul>
-                    {store.completedItems.map(item => (
+                    {TodoStore.completedItems.map(item => (
                         <li key={item.id}>
-                            {item.name} - {statusType[item.status]}
-                            <RemoveTodo onRemoveTodo={() => store.removeItem(item.id)} />
+                            <p>{item.name} - {TodoStore.statusName(item.status)}</p>
+                            <RemoveTodo onRemoveTodo={() => TodoStore.removeItem(item.id)} />
                         </li>
                     ))}
                 </ul>
@@ -61,52 +60,33 @@ function TodoList({ className }) {
     )
 }
 
-function createTodoStore() {
-    const self = observable({
-        items: [{
-            id: uuid(),
-            name: "Sample item",
-            status: 0
-        }],
-
-        get activeItems() {
-            return self.items.filter(i => i.status < 2);
-        },
-        get completedItems() {
-            return self.items.filter(i => i.status >= 2);
-        },
-
-        addItem() {
-            self.items.push({
-                id: uuid(),
-                name: `Item ${self.items.length}`,
-                status: 0
-            });
-        },
-        removeItem(id) {
-            self.items = self.items.filter(item => item.id !== id);
-        },
-        setItemName(id, name) {
-            const item = self.items.find(i => i.id === id);
-            item.name = name;
-        },
-        nextStatus(id) {
-            const item = self.items.find(i => i.id === id);
-            item.status += 1
-        },
-        previousStatus(id) {
-            const item = self.items.find(i => i.id === id);
-            item.status -= 1
-        }
-    })
-
-    return self;
-}
-
 export default styled(observer(TodoList))`
+    font-family: sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
     background-color: lightgray;
 
     .title {
         color: orange;
+    }
+
+    section {
+        margin: .5rem;
+    }
+
+    ul {
+        padding: 0;
+    }
+
+    footer {
+        ul {
+            padding: 0 .5rem;
+
+            li {
+                p { text-decoration: line-through; color: darkgrey; }
+                display: flex;
+                align-items: center;
+            }
+        }
     }
 `
