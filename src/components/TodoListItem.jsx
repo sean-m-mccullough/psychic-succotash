@@ -5,12 +5,12 @@ import styled from 'styled-components'
 import { storesContext } from  '../store/TodoStore'
 
 import Input from './Input'
-import Button from './Button'
+import Button, { TagButton } from './Button'
 import { RemoveTodo } from './TodoList'
 
 export const useTodoStores = () => React.useContext(storesContext)
 
-function TodoListItem({ className, name, status, onComplete, onChange, revertStatus, onRemove }) {
+function TodoListItem({ className, name, status, tags, onComplete, onChange, revertStatus, onRemove, onTagClick }) {
     const { TodoStore } = useTodoStores()
 
     const previousStatusName = TodoStore.statusName(status - 1)
@@ -25,9 +25,22 @@ function TodoListItem({ className, name, status, onComplete, onChange, revertSta
                     <Button onClick={onComplete}>{nextStatusName}</Button>
                 </div>
             </div>
+            {tags.length > 0 && <div className="todoCardTags">
+                <ul>
+                    {tags.map(tag => (
+                        <li key={tag}>{tag}</li>
+                    ))}
+                </ul>
+            </div>}
             <div className="todoCardBody">
                 <Input onChange={onChange} value={name} fullWidth />
                 <RemoveTodo onRemoveTodo={onRemove} />
+            </div>
+            <div className="todoCardAvailabeTags">
+                <p>Add tags:</p>
+                {TodoStore.tagCatalog.map(tag => (
+                    <TagButton key={tag} value={tag} onClick={onTagClick}>{tag}</TagButton>
+                ))}
             </div>
         </li>
     )
@@ -53,6 +66,12 @@ export default styled(observer(TodoListItem))`
         justify-content: space-between;
     }
 
+    .todoCardTags {
+        border-bottom: 2px solid darkgrey;
+        padding: 0 0 .5rem;
+        margin: 0 0 .5rem;
+    }
+
     .todoCardStatus {
         font-size: 0.75rem;
         color: grey;
@@ -61,6 +80,29 @@ export default styled(observer(TodoListItem))`
 
     .todoCardActions {
         display: flex;
+    }
+
+    .todoCardTags {
+        p {
+            font-size: .825rem;
+            color: gray;
+        }
+        
+        ul {
+            display: flex;
+            align-content: space-between;
+            flex-direction: row;
+        }
+
+        li {
+            list-style-type: none;
+            margin: 0 .25rem;
+            background-color: purple;
+            color: lightgray;
+            padding: .25rem;
+            font-size: .75rem;
+            border-radius: 4px;
+        }
     }
 
     .todoCardBody {

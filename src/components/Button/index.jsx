@@ -20,4 +20,14 @@ const Button = styled.button`
     }
 `;
 
+export const TagButton = styled(Button)`
+    font-size: .75rem;
+    background-color: gray;
+    min-width: 4rem;
+    width: auto;
+    padding: .25rem;
+    border: 1px solid darkgray;
+    margin: 0 0 0 .25rem;
+`;
+
 export default Button

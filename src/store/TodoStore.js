@@ -8,22 +8,33 @@ function createTodoStore() {
     const self = observable({
         items: [{
             id: uuid(),
-            name: "Hello, Ratehub!",
-            status: 1
+            name: "Contact candidates to explain the coding exercise",
+            status: 1,
+            tags: []
         }],
+        tagCatalog: ["Hiring", "Urgent"],
 
         get activeItems() {
-            return self.items.filter(i => i.status < 2);
+            return self.items.filter(i => i.status < 2)
         },
         get completedItems() {
-            return self.items.filter(i => i.status >= 2);
+            return self.items.filter(i => i.status >= 2)
         },
 
+        addTag(tag, id) {
+            const item = self.items.find(i => i.id === id)
+            item.tags.push(tag);
+        },
+        removeTag(tag, id) {
+            const item = self.items.find(i => i.id === id)
+            item.tags = item.tags.filter(t => t !== tag);
+        },
         addItem(name) {
             self.items.push({
                 id: uuid(),
                 name,
-                status: 0
+                status: 0,
+                tags: []
             });
         },
         removeItem(id) {

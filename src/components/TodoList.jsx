@@ -33,6 +33,7 @@ function TodoList({ className }) {
                             key={item.id}
                             name={item.name}
                             status={item.status}
+                            tags={item.tags}
                             onComplete={() => {
                                 TodoStore.nextStatus(item.id)
                             }}
@@ -41,6 +42,14 @@ function TodoList({ className }) {
                             }}
                             onChange={(e) => TodoStore.setItemName(item.id, e.target.value)}
                             onRemove={() => TodoStore.removeItem(item.id)}
+                            onTagClick={(e) => {
+                                const tag = e.target.value
+                                if(item.tags.includes(tag)) {
+                                    TodoStore.removeTag(tag, item.id)
+                                } else {
+                                    TodoStore.addTag(tag, item.id)
+                                }
+                            }}
                         />
                     ))}
                 </ul>
