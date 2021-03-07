@@ -27,7 +27,7 @@ function CreateTodo() {
                     type="text" 
                     placeholder="Hello, Ratehub!"
                     value={newTodo} 
-                    onChange={(e) => setNewTodo(e.target.value)} 
+                    onChange={(e) => setNewTodo(e?.target?.value)} 
                 />
                 <Button type="submit">New Todo</Button>
             </form>

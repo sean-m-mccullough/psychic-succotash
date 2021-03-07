@@ -17,7 +17,18 @@ export function RemoveTodo({onRemoveTodo}) {
 }
 
 function TodoList({ className }) {
-    const { TodoStore } = useTodoStores()
+    const { TodoStore } = useTodoStores();
+    // const [timeout, setNewTimeout] = React.useState(null);
+
+    // Make a hook useDebounce
+    // const useDebounce = (func, delay) => {
+        // check if timeout exists
+            // if yes, clear it
+
+        //create setTimeout()
+            // use setNewTimeout() and to null
+            // execute func
+    // }
 
     return (
         <div className={className}>
@@ -40,10 +51,13 @@ function TodoList({ className }) {
                             revertStatus={() => {
                                 TodoStore.previousStatus(item.id)
                             }}
-                            onChange={(e) => TodoStore.setItemName(item.id, e.target.value)}
+                            onChange={e => {
+                                // useDebounce here
+                                TodoStore.setItemName(item.id, e?.target?.value)
+                            }}
                             onRemove={() => TodoStore.removeItem(item.id)}
                             onTagClick={(e) => {
-                                const tag = e.target.value
+                                const tag = e?.target?.value
                                 if(item.tags.includes(tag)) {
                                     TodoStore.removeTag(tag, item.id)
                                 } else {
@@ -65,12 +79,22 @@ function TodoList({ className }) {
                     ))}
                 </ul>
             </section>
+            <section>
+                <h2>Change logs:</h2>
+                <div>
+                    <ul>
+                        {TodoStore.actionLog.map((action, i) => (
+                            <li key={`actionLog-${i}`}>{action}</li>
+                        ))}
+                    </ul>
+                </div>
+            </section>
             <footer>
                 <div className="todoListFilter">
                     <p>Filter Lists with: {TodoStore.filteredTags.map(tag => (<span>{tag}</span>))}</p>
                     {TodoStore.tagCatalog.map(tag => (
                         <Button key={tag} value={tag} onClick={(e) => {
-                            const tag = e.target.value
+                            const tag = e?.target?.value
                             if(TodoStore.filteredTags.includes(tag)) {
                                 TodoStore.removeTagFilter(tag)
                             } else {
